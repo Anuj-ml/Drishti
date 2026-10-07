@@ -1,0 +1,463 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Archivo", "Instrument Sans", sans-serif;
+  --font-sans: "Instrument Sans", "Archivo", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Paper + graphite system */
+  --color-canvas: #f2f1ee;
+  --color-paper: #fbfaf9;
+  --color-surface: #ffffff;
+  --color-hairline: #e3e1dc;
+
+  --color-ink: #16171a;
+  --color-ink2: #4b4e54;
+  --color-ink3: #83878e;
+  --color-ink4: #aaaeb4;
+
+  /* Graphite stage (video surfaces) */
+  --color-stage: #0d0e11;
+  --color-stage2: #16181d;
+  --color-stage3: #20232a;
+  --color-stagehair: #2b2f37;
+
+  /* Signals */
+  --color-signal: #0e6d61;
+  --color-signal-soft: #e2f1ee;
+  --color-person: #ef6c33;
+  --color-vehicle: #4d8dff;
+  --color-face: #21b8a2;
+  --color-warn: #b7791f;
+  --color-alert: #d92d20;
+  --color-alert-soft: #fdeceb;
+  --color-fence: #f2c94c;
+  --color-night: #7aa6ff;
+
+  --shadow-lift: 0 1px 1px rgba(20, 22, 26, 0.04), 0 6px 18px -6px rgba(20, 22, 26, 0.1),
+    0 22px 44px -24px rgba(20, 22, 26, 0.14);
+  --shadow-float: 0 2px 6px rgba(20, 22, 26, 0.06), 0 24px 60px -20px rgba(20, 22, 26, 0.24);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  ::selection {
+    background: #cfe9e4;
+    color: #0b3f38;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    height: 18px;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--rng-accent, #0e6d61) 0 var(--rng-pct, 50%),
+      rgba(20, 22, 26, 0.13) var(--rng-pct, 50%) 100%
+    );
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 14px;
+    width: 14px;
+    margin-top: -5px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28), 0 0 0 0.5px rgba(20, 22, 26, 0.16);
+    transition: transform 0.14s ease;
+  }
+  input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.18);
+  }
+  input[type="range"]::-moz-range-track {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(20, 22, 26, 0.13);
+  }
+  input[type="range"]::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    border: none;
+    border-radius: 999px;
+    background: #fff;
+  }
+  .on-stage input[type="range"]::-webkit-slider-runnable-track {
+    background: linear-gradient(
+      to right,
+      var(--rng-accent, #7fd6c8) 0 var(--rng-pct, 50%),
+      rgba(255, 255, 255, 0.16) var(--rng-pct, 50%) 100%
+    );
+  }
+  .on-stage input[type="range"]::-webkit-slider-thumb {
+    background: #f4f6f6;
+  }
+}
+
+@layer components {
+  .micro {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.32;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+  }
+  .scanlines::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.045) 0 1px,
+      transparent 1px 3px
+    );
+    mix-blend-mode: overlay;
+  }
+}
+
+/* ── motion ───────────────────────────────────────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slidein {
+  from {
+    opacity: 0;
+    transform: translate3d(18px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes blip {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    transform: scale(0.82);
+  }
+}
+@keyframes sweep {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(210%);
+  }
+}
+@keyframes sweepv {
+  0% {
+    top: -6%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    top: 104%;
+    opacity: 0;
+  }
+}
+@keyframes drift {
+  0% {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.12) translate3d(-1.4%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: -220;
+  }
+}
+@keyframes ring {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes sheen {
+  0% {
+    transform: translateX(-140%) skewX(-14deg);
+  }
+  100% {
+    transform: translateX(260%) skewX(-14deg);
+  }
+}
+
+.rise {
+  animation: rise 0.62s cubic-bezier(0.22, 0.68, 0.24, 0.99) both;
+}
+.slidein {
+  animation: slidein 0.45s cubic-bezier(0.22, 0.68, 0.24, 0.99) both;
+}
+.live-dot {
+  animation: blip 1.5s ease-in-out infinite;
+}
+.kb {
+  animation: drift 26s ease-in-out infinite;
+}
+.scan-v {
+  animation: sweepv 5.4s linear infinite;
+}
+.dashmove {
+  animation: dash 6s linear infinite;
+}
+.ping-ring {
+  animation: ring 1.9s ease-out infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+}
+
+/* scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 124, 130, 0.4) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 124, 130, 0.32);
+  border: 2.5px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 124, 130, 0.55);
+  background-clip: content-box;
+}
+
+/* Response Twin: restrained, readable instrument overlays over real map tiles. */
+.rt-map .leaflet-container {
+  height: 100%;
+  width: 100%;
+  background-color: #d8e1d5;
+  background-image: linear-gradient(rgba(34, 68, 50, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 68, 50, 0.055) 1px, transparent 1px);
+  background-size: 42px 42px;
+  font-family: var(--font-sans);
+}
+
+.rt-map .leaflet-tile-pane {
+  filter: grayscale(0.45) sepia(0.13) saturate(0.77) contrast(0.94) brightness(1.045);
+}
+
+.rt-map .leaflet-control-attribution,
+.rt-map .leaflet-control-scale-line {
+  border: 1px solid rgba(150, 167, 146, 0.3);
+  border-radius: 5px;
+  background: rgba(250, 252, 248, 0.91);
+  color: #69756d;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  backdrop-filter: blur(8px);
+}
+
+.rt-map .leaflet-control-attribution {
+  margin-right: 9px;
+  margin-bottom: 7px;
+  padding: 2px 6px;
+}
+
+.rt-map .leaflet-control-attribution a {
+  color: #0e6d61;
+}
+
+.rt-map .leaflet-control-scale {
+  margin-left: 14px;
+  margin-bottom: 9px;
+}
+
+.rt-map .leaflet-control-scale-line {
+  padding: 1px 5px 2px;
+  border-top: none;
+  font-size: 9px;
+}
+
+.rt-map .rt-icon {
+  background: transparent;
+  border: none;
+}
+
+.rt-marker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 3px 8px 3px 5px;
+  border: 1px solid rgba(24, 42, 31, 0.12);
+  border-radius: 7px;
+  background: rgba(250, 252, 248, 0.96);
+  box-shadow: 0 2px 8px rgba(19, 38, 25, 0.14);
+  color: #24332a;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(8px);
+}
+
+.rt-marker-dot {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border: 2px solid #0e6d61;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.rt-marker-subject {
+  border-color: rgba(217, 45, 32, 0.22);
+  background: #bd3128;
+  color: #fff;
+  box-shadow: 0 3px 13px rgba(170, 45, 33, 0.25);
+}
+.rt-marker-subject .rt-marker-dot {
+  border-color: #fff;
+  background: #d92d20;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  animation: blip 1.8s ease-in-out infinite;
+}
+
+.rt-marker-patrol {
+  border-color: rgba(14, 109, 97, 0.3);
+  background: #0e6d61;
+  color: #fff;
+  box-shadow: 0 3px 13px rgba(14, 109, 97, 0.23);
+}
+.rt-marker-patrol .rt-marker-dot {
+  border-color: #fff;
+  background: #0e6d61;
+}
+
+.rt-marker-intercept {
+  border-color: rgba(14, 109, 97, 0.45);
+  background: #fff;
+  color: #0a5d52;
+  font-weight: 700;
+}
+.rt-marker-intercept .rt-marker-dot {
+  border-color: #0e6d61;
+  background: #a7dfc8;
+}
+
+.rt-marker-site {
+  height: 24px;
+  border-color: rgba(45, 64, 48, 0.18);
+  background: rgba(255, 255, 255, 0.94);
+  color: #516356;
+  font-size: 8px;
+}
+.rt-marker-site .rt-marker-dot {
+  width: 7px;
+  height: 7px;
+  border: none;
+  background: #79907e;
+}
+
+.rt-marker-option {
+  height: 24px;
+  padding: 2px 6px;
+  border-color: rgba(47, 67, 50, 0.25);
+  background: rgba(255, 255, 255, 0.89);
+  color: #6d7a70;
+  font-size: 10px;
+}
+.rt-marker-option .rt-marker-dot {
+  width: 7px;
+  height: 7px;
+  border: 1px solid #8ba28b;
+}
+
+.rt-map .rt-tooltip {
+  border: 1px solid rgba(30, 53, 35, 0.12);
+  border-radius: 6px;
+  box-shadow: 0 3px 13px rgba(20, 40, 28, 0.12);
+  color: #34443a;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.rt-map-flow {
+  animation: dash 16s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-map-flow,
+  .rt-marker-subject .rt-marker-dot {
+    animation: none;
+  }
+}
